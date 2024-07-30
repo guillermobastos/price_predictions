@@ -156,7 +156,7 @@ def evaluate_opportunity(ticker):
     accuracies.append(f"{accuracy:.2f}%")
 
 # List of tickers to evaluate
-tickers = ['GOOGL','LI','PDD', 'AMZN', 'MDB', 'CRWD', 'BABA']
+tickers = ['GOOGL','NET','LI','WMT', 'AMZN', 'MDB', 'CRWD', 'BABA', 'MSFT']
 
 for ticker in tickers:
     evaluate_opportunity(ticker)
