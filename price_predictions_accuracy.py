@@ -6,9 +6,10 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 
+accuracies = []
 percentages = []
 
-def get_historical_data(ticker, period="1y"):  
+def get_historical_data(ticker, period="2y"):
     """Fetch historical price data from Yahoo Finance for a given ticker and period."""
     stock = yf.Ticker(ticker)
     history = stock.history(period=period)
@@ -104,7 +105,7 @@ def evaluate_opportunity(ticker):
     model = train_lstm_model(X_train, y_train)
     
     # Make future predictions
-    future_steps = 30  
+    future_steps = 60  
     initial_data = X[-1]
     future_predictions = make_future_predictions(model, initial_data, future_steps)
     future_predictions = scaler.inverse_transform(future_predictions.reshape(-1, 1)).flatten()
@@ -141,11 +142,23 @@ def evaluate_opportunity(ticker):
     print(f"Percentage Change: {percentage_change:.2f}%")
     percentages.append(f"{percentage_change:.2f}%")
 
+    # Calculate accuracy of the model on the test set
+    test_predictions = model.predict(X_test)
+    test_predictions = scaler.inverse_transform(test_predictions).flatten()
+    actual_prices = scaler.inverse_transform(y_test.reshape(-1, 1)).flatten()
+
+    # Calculate Mean Absolute Percentage Error (MAPE)
+    mape = np.mean(np.abs((actual_prices - test_predictions) / actual_prices)) * 100
+    accuracy = 100 - mape
+    print(f"Accuracy for {ticker}: {accuracy:.2f}%")
+    accuracies.append(f"{accuracy:.2f}%")
+
 # List of tickers to evaluate
 tickers = ['GOOGL','LI','PDD', 'AMZN', 'MDB', 'CRWD', 'BABA']
 
 for ticker in tickers:
     evaluate_opportunity(ticker)
 
+# Display percentage change and accuracy for each ticker
 for i in range(len(percentages)):
-    print(f'{tickers[i]} -> {percentages[i]}')
+    print(f'{tickers[i]} -> Percentage Change: {percentages[i]}, Accuracy: {accuracies[i]}')
