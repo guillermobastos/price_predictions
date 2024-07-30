@@ -9,7 +9,7 @@ from tensorflow.keras.layers import LSTM, Dense
 accuracies = []
 percentages = []
 
-def get_historical_data(ticker, period="2y"):
+def get_historical_data(ticker, period="5y"):
     """Fetch historical price data from Yahoo Finance for a given ticker and period."""
     stock = yf.Ticker(ticker)
     history = stock.history(period=period)
@@ -100,8 +100,9 @@ def evaluate_opportunity(ticker):
     X, y, scaler = prepare_lstm_data(history, window)
     
     # Split the data into training and testing sets
-    X_train, X_test = X[:-10], X[-10:]
-    y_train, y_test = y[:-10], y[-10:]
+    split = int(len(X) * 0.8)
+    X_train, X_test = X[:split], X[split:]
+    y_train, y_test = y[:split], y[split:]
     
     # Train the LSTM model
     model = train_lstm_model(X_train, y_train)
