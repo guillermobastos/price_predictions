@@ -92,6 +92,8 @@ def evaluate_opportunity(ticker):
         ticker (str): Stock ticker symbol.
     """
     # Fetch historical data
+    stock = yf.Ticker(ticker)
+    company_name = stock.info.get('shortName', ticker)
     history = get_historical_data(ticker)
     window = 60  # Adjust the time window as needed
     X, y, scaler = prepare_lstm_data(history, window)
@@ -117,7 +119,7 @@ def evaluate_opportunity(ticker):
     future_dates = pd.date_range(start=history.index[-1] + pd.DateOffset(1), periods=future_steps, freq='D')
     plt.plot(future_dates, future_predictions, label=f'Future Prediction {future_steps} Future Steps', color='red', linestyle='--')
 
-    plt.title(f'Historical Closing Price and Prediction for {ticker}')
+    plt.title(f'Historical Closing Price and Prediction for {company_name} ({ticker})')
     plt.xlabel('Date')
     plt.ylabel('Closing Price')
     plt.legend()
@@ -142,7 +144,7 @@ def evaluate_opportunity(ticker):
     percentages.append(f"{percentage_change:.2f}%")
 
 # List of tickers to evaluate
-tickers = ['GOOGL','LI','PDD', 'AMZN', 'MDB', 'CRWD', 'BABA']
+tickers = ['GOOGL','NET','LI','WMT', 'AMZN', 'MDB', 'CRWD', 'BABA', 'MSFT']
 
 for ticker in tickers:
     evaluate_opportunity(ticker)
